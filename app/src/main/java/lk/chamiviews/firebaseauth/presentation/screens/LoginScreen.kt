@@ -24,7 +24,7 @@ import androidx.compose.ui.unit.dp
 import lk.chamiviews.firebaseauth.data.model.User
 import lk.chamiviews.firebaseauth.presentation.components.ButtonComponent
 import lk.chamiviews.firebaseauth.presentation.components.TextFieldComponent
-import lk.chamiviews.firebaseauth.presentation.event.LoginEvent
+import lk.chamiviews.firebaseauth.presentation.events.LoginEvent
 
 @Composable
 fun LoginScreen(
