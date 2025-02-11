@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "240989185361",
+    "project_id": "fire-example-bfc44",
+    "storage_bucket": "fire-example-bfc44.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:240989185361:android:2602a89e7a88cf041c1f70",
+        "android_client_info": {
+          "package_name": "lk.chamiviews.firebaseauth"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCflqPX_pN_YyVZZ6RuBX8Fqr5A7_SdJlQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
