@@ -7,7 +7,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import lk.chamiviews.firebaseauth.data.model.User
 import lk.chamiviews.firebaseauth.domain.model.UserDomain
 import lk.chamiviews.firebaseauth.domain.usecase.LoginUseCase
 import lk.chamiviews.firebaseauth.presentation.events.LoginEvent
