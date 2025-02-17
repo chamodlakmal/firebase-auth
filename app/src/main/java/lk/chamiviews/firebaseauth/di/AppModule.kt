@@ -8,6 +8,7 @@ import dagger.hilt.components.SingletonComponent
 import lk.chamiviews.firebaseauth.data.repository.AuthRepositoryImpl
 import lk.chamiviews.firebaseauth.domain.repository.AuthRepository
 import lk.chamiviews.firebaseauth.domain.usecase.LoginUseCase
+import lk.chamiviews.firebaseauth.domain.usecase.RegisterUseCase
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -21,5 +22,8 @@ object AppModule {
 
     @Provides
     fun provideLoginUseCase(authRepository: AuthRepository) = LoginUseCase(authRepository)
+
+    @Provides
+    fun provideRegisterUseCase(authRepository: AuthRepository) = RegisterUseCase(authRepository)
 
 }

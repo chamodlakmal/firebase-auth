@@ -6,22 +6,30 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import lk.chamiviews.firebaseauth.domain.model.UserDomain
 import lk.chamiviews.firebaseauth.domain.usecase.LoginUseCase
-import lk.chamiviews.firebaseauth.presentation.events.LoginEvent
+import lk.chamiviews.firebaseauth.domain.usecase.RegisterUseCase
+import lk.chamiviews.firebaseauth.presentation.events.AuthEvent
+import lk.chamiviews.firebaseauth.presentation.state.LoginState
+import lk.chamiviews.firebaseauth.presentation.state.RegisterState
 import javax.inject.Inject
 
 @HiltViewModel
 class AuthViewModel @Inject constructor(
-    private val loginUseCase: LoginUseCase
+    private val loginUseCase: LoginUseCase,
+    private val registerUseCase: RegisterUseCase
 ) : ViewModel() {
-    private val _loginState = MutableStateFlow<Result<UserDomain>?>(null)
-    val loginState: StateFlow<Result<UserDomain>?> = _loginState
+    private val _loginState = MutableStateFlow(LoginState())
+    val loginState: StateFlow<LoginState> = _loginState
 
-    fun onEvent(event: LoginEvent) {
+    private val _registerState = MutableStateFlow(RegisterState())
+    val registerState: StateFlow<RegisterState> = _registerState
+
+    fun onEvent(event: AuthEvent) {
         when (event) {
-            is LoginEvent.Submit -> {
+            is AuthEvent.Login -> {
                 login(event.email, event.password)
             }
         }
@@ -30,8 +38,31 @@ class AuthViewModel @Inject constructor(
 
     private fun login(email: String, password: String) {
         viewModelScope.launch(Dispatchers.IO) {
-            loginUseCase(email, password).collect {
-                _loginState.value = it
+            _loginState.update {
+                it.copy(isLoading = true, errorTxt = null, userDomain = null)
+            }
+            loginUseCase(email, password).collect { result ->
+                _loginState.value = LoginState(
+                    isLoading = false,
+                    userDomain = result.getOrNull(),
+                    errorTxt = result.exceptionOrNull()?.message
+                )
+            }
+        }
+    }
+
+    private fun register(email: String, password: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            _registerState.update {
+                it.copy(isLoading = true, errorTxt = null, userDomain = null)
+            }
+            registerUseCase(email, password).collect { result ->
+                _registerState.value = RegisterState(
+                    isLoading = false,
+                    userDomain = result.getOrNull(),
+                    errorTxt = result.exceptionOrNull()?.message
+                )
+
             }
         }
     }

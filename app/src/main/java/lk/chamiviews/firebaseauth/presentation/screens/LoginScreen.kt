@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -19,19 +20,23 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import lk.chamiviews.firebaseauth.data.model.User
+import lk.chamiviews.firebaseauth.domain.model.UserDomain
 import lk.chamiviews.firebaseauth.presentation.components.ButtonComponent
 import lk.chamiviews.firebaseauth.presentation.components.TextFieldComponent
-import lk.chamiviews.firebaseauth.presentation.events.LoginEvent
+import lk.chamiviews.firebaseauth.presentation.events.AuthEvent
+import lk.chamiviews.firebaseauth.presentation.state.LoginState
 
 @Composable
 fun LoginScreen(
-    loginState: Result<User>?, onEvent: (LoginEvent) -> Unit
+    loginState: LoginState?, onEvent: (AuthEvent) -> Unit
 ) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+
+    var isValidEmail by remember { mutableStateOf(false) }
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -40,11 +45,21 @@ fun LoginScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         TextFieldComponent(
-            value = email,
-            onValueChange = { email = it },
-            label = "Email",
-            icon = Icons.Default.Email
+            value = email, onValueChange = {
+                isValidEmail = android.util.Patterns.EMAIL_ADDRESS.matcher(it).matches()
+                email = it
+            }, label = "Email", icon = Icons.Default.Email
         )
+        if (!isValidEmail) {
+            Text(
+                "Invalid email",
+                color = Color.Red,
+                textAlign = TextAlign.Start,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 2.dp)
+            )
+        }
 
         Spacer(modifier = Modifier.height(8.dp))
 
@@ -56,17 +71,28 @@ fun LoginScreen(
             icon = Icons.Default.Lock
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
-
-        ButtonComponent(text = "Login", isLoading = false) {
-            onEvent(LoginEvent.Submit(email, password))
+        if (password.length < 6) {
+            Text(
+                "Password must be at least 6 characters",
+                color = Color.Red,
+                textAlign = TextAlign.Start,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 2.dp)
+            )
         }
 
-        loginState?.let {
-            when {
-                it.isSuccess -> Text("Login Success: ${it.getOrNull()?.email}")
-                it.isFailure -> Text("Error: ${it.exceptionOrNull()?.message}", color = Color.Red)
-            }
+        Spacer(modifier = Modifier.height(16.dp))
+
+        ButtonComponent(text = "Login",
+            isLoading = loginState?.isLoading == true,
+            enabled = isValidEmail && loginState?.isLoading == false && password.length > 5,
+            onClick = {
+                onEvent(AuthEvent.Login(email, password))
+            })
+
+        if (loginState?.errorTxt != null) {
+            Text("Error: ${loginState.errorTxt}", color = Color.Red)
         }
     }
 }
@@ -75,8 +101,5 @@ fun LoginScreen(
 @Preview(showBackground = true)
 @Composable
 fun LoginScreenPreview() {
-    LoginScreen(
-        loginState = Result.success(User("1", "william.henry.moody@my-own-personal-domain.com")),
-        onEvent = {}
-    )
+    LoginScreen(loginState = LoginState(), onEvent = {})
 }
