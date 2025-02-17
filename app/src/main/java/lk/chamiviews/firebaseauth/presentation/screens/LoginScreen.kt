@@ -1,5 +1,7 @@
 package lk.chamiviews.firebaseauth.presentation.screens
 
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -37,6 +39,7 @@ fun LoginScreen(
     var password by remember { mutableStateOf("") }
 
     var isValidEmail by remember { mutableStateOf(false) }
+    var isLoginFlow by remember { mutableStateOf(true) }
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -50,7 +53,7 @@ fun LoginScreen(
                 email = it
             }, label = "Email", icon = Icons.Default.Email
         )
-        if (!isValidEmail) {
+        if (!isValidEmail && email.isNotEmpty()) {
             Text(
                 "Invalid email",
                 color = Color.Red,
@@ -71,7 +74,7 @@ fun LoginScreen(
             icon = Icons.Default.Lock
         )
 
-        if (password.length < 6) {
+        if (password.length < 6 && password.isNotEmpty()) {
             Text(
                 "Password must be at least 6 characters",
                 color = Color.Red,
@@ -84,16 +87,29 @@ fun LoginScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        ButtonComponent(text = "Login",
+        ButtonComponent(text = if (isLoginFlow) "Login" else "Register",
             isLoading = loginState?.isLoading == true,
             enabled = isValidEmail && loginState?.isLoading == false && password.length > 5,
             onClick = {
-                onEvent(AuthEvent.Login(email, password))
+                if (isLoginFlow) {
+                    onEvent(AuthEvent.Login(email, password))
+                } else {
+                    onEvent(AuthEvent.Register(email, password))
+                }
             })
 
         if (loginState?.errorTxt != null) {
             Text("Error: ${loginState.errorTxt}", color = Color.Red)
         }
+
+        Text(text = if (isLoginFlow) "Don't have an account? Register" else "Already have an account? Login",
+            modifier = Modifier.clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = null,
+                onClick = {
+                    isLoginFlow = !isLoginFlow
+                }
+            ))
     }
 }
 

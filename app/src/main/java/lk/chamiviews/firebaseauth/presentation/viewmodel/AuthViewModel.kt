@@ -32,6 +32,10 @@ class AuthViewModel @Inject constructor(
             is AuthEvent.Login -> {
                 login(event.email, event.password)
             }
+
+            is AuthEvent.Register -> {
+                register(event.email, event.password)
+            }
         }
 
     }
