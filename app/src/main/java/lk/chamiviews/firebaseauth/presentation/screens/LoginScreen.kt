@@ -30,10 +30,12 @@ import lk.chamiviews.firebaseauth.presentation.components.ButtonComponent
 import lk.chamiviews.firebaseauth.presentation.components.TextFieldComponent
 import lk.chamiviews.firebaseauth.presentation.events.AuthEvent
 import lk.chamiviews.firebaseauth.presentation.state.LoginState
+import lk.chamiviews.firebaseauth.presentation.state.RegisterState
 
 @Composable
-fun LoginScreen(
-    loginState: LoginState?, onEvent: (AuthEvent) -> Unit
+fun AuthScreen(
+    loginState: LoginState?, onEvent: (AuthEvent) -> Unit,
+    registerState: RegisterState? = null
 ) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -88,8 +90,8 @@ fun LoginScreen(
         Spacer(modifier = Modifier.height(16.dp))
 
         ButtonComponent(text = if (isLoginFlow) "Login" else "Register",
-            isLoading = loginState?.isLoading == true,
-            enabled = isValidEmail && loginState?.isLoading == false && password.length > 5,
+            isLoading = loginState?.isLoading == true || registerState?.isLoading == true,
+            enabled = isValidEmail && loginState?.isLoading == false && registerState?.isLoading == false && password.length > 5,
             onClick = {
                 if (isLoginFlow) {
                     onEvent(AuthEvent.Login(email, password))
@@ -99,7 +101,11 @@ fun LoginScreen(
             })
 
         if (loginState?.errorTxt != null) {
-            Text("Error: ${loginState.errorTxt}", color = Color.Red)
+            Text("Error: ${loginState?.errorTxt}", color = Color.Red)
+        }
+
+        if (registerState?.errorTxt != null) {
+            Text("Error: ${registerState.errorTxt}", color = Color.Red)
         }
 
         Text(text = if (isLoginFlow) "Don't have an account? Register" else "Already have an account? Login",
@@ -116,6 +122,6 @@ fun LoginScreen(
 
 @Preview(showBackground = true)
 @Composable
-fun LoginScreenPreview() {
-    LoginScreen(loginState = LoginState(), onEvent = {})
+fun AuthScreenPreview() {
+    AuthScreen(loginState = LoginState(), onEvent = {})
 }

@@ -9,7 +9,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import lk.chamiviews.firebaseauth.presentation.screens.LoginScreen
+import lk.chamiviews.firebaseauth.presentation.screens.AuthScreen
 import lk.chamiviews.firebaseauth.presentation.viewmodel.AuthViewModel
 import lk.chamiviews.firebaseauth.ui.theme.FirebaseauthTheme
 
@@ -22,8 +22,9 @@ class MainActivity : ComponentActivity() {
             FirebaseauthTheme {
                 val viewModel: AuthViewModel = hiltViewModel()
 
-                LoginScreen(
+                AuthScreen(
                     loginState = viewModel.loginState.collectAsState().value,
+                    registerState = viewModel.registerState.collectAsState().value,
                     onEvent = viewModel::onEvent
                 )
             }
