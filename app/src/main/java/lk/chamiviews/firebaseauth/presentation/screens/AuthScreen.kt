@@ -50,8 +50,8 @@ fun AuthScreen(
     ) {
         TextFieldComponent(
             value = email, onValueChange = {
-                isValidEmail = android.util.Patterns.EMAIL_ADDRESS.matcher(it).matches()
-                email = it
+                isValidEmail = android.util.Patterns.EMAIL_ADDRESS.matcher(it.trim()).matches()
+                email = it.trim()
             }, label = "Email", icon = Icons.Default.Email
         )
         if (!isValidEmail && email.isNotEmpty()) {
@@ -69,7 +69,7 @@ fun AuthScreen(
 
         TextFieldComponent(
             value = password,
-            onValueChange = { password = it },
+            onValueChange = { password = it.trim() },
             label = "Password",
             visualTransformation = PasswordVisualTransformation(),
             icon = Icons.Default.Lock
