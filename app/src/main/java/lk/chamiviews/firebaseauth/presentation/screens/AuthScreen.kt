@@ -25,7 +25,6 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import lk.chamiviews.firebaseauth.domain.model.UserDomain
 import lk.chamiviews.firebaseauth.presentation.components.ButtonComponent
 import lk.chamiviews.firebaseauth.presentation.components.TextFieldComponent
 import lk.chamiviews.firebaseauth.presentation.events.AuthEvent
@@ -116,6 +115,14 @@ fun AuthScreen(
                     isLoginFlow = !isLoginFlow
                 }
             ))
+
+        if (loginState?.userDomain != null) {
+            Text("Login Success", color = Color.Green)
+        }
+
+        if (registerState?.userDomain != null) {
+            Text("Register Success", color = Color.Green)
+        }
     }
 }
 
