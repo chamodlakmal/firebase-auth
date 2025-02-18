@@ -23,7 +23,4 @@ object AppModule {
     @Provides
     fun provideLoginUseCase(authRepository: AuthRepository) = LoginUseCase(authRepository)
 
-    @Provides
-    fun provideRegisterUseCase(authRepository: AuthRepository) = RegisterUseCase(authRepository)
-
 }
