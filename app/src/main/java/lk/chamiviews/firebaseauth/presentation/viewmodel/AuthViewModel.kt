@@ -3,6 +3,7 @@ package lk.chamiviews.firebaseauth.presentation.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -27,6 +28,18 @@ class AuthViewModel @Inject constructor(
     private val _registerState = MutableStateFlow(RegisterState())
     val registerState: StateFlow<RegisterState> = _registerState
 
+    private val loginExceptionHandler = CoroutineExceptionHandler { _, exception ->
+        _loginState.update {
+            it.copy(isLoading = false, errorTxt = exception.localizedMessage)
+        }
+    }
+
+    private val registerExceptionHandler = CoroutineExceptionHandler { _, exception ->
+        _registerState.update {
+            it.copy(isLoading = false, errorTxt = exception.localizedMessage)
+        }
+    }
+
     fun onEvent(event: AuthEvent) {
         when (event) {
             is AuthEvent.Login -> {
@@ -41,7 +54,7 @@ class AuthViewModel @Inject constructor(
     }
 
     private fun login(email: String, password: String) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(Dispatchers.IO + loginExceptionHandler) {
             _loginState.update {
                 it.copy(isLoading = true, errorTxt = null, userDomain = null)
             }
@@ -56,7 +69,7 @@ class AuthViewModel @Inject constructor(
     }
 
     private fun register(email: String, password: String) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(Dispatchers.IO + registerExceptionHandler) {
             _registerState.update {
                 it.copy(isLoading = true, errorTxt = null, userDomain = null)
             }
