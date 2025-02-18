@@ -37,9 +37,4 @@ object AppModule {
     @Singleton
     fun provideGetProductsUseCase(repository: ProductRepository) = GetProductsUseCase(repository)
 
-    @Provides
-    @Singleton
-    fun provideGetProductByIdUseCase(repository: ProductRepository) =
-        GetProductByIdUseCase(repository)
-
 }

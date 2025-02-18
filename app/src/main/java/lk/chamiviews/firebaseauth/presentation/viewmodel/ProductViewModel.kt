@@ -16,21 +16,13 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ProductViewModel @Inject constructor(
-    private val getProductsUseCase: GetProductsUseCase,
-    private val getProductByIdUseCase: GetProductByIdUseCase
+    private val getProductsUseCase: GetProductsUseCase
 ) : ViewModel() {
     private val _productState = MutableStateFlow(ProductState())
     val productState: StateFlow<ProductState> = _productState
 
     private val _productDetailState = MutableStateFlow(ProductDetailState())
     val productDetailState: StateFlow<ProductDetailState> = _productDetailState
-
-    private val productDetailExceptionHandler = CoroutineExceptionHandler { _, exception ->
-        _productDetailState.value = ProductDetailState(
-            errorMessage = exception.localizedMessage ?: "An unknown error occurred",
-            isLoading = false
-        )
-    }
 
     private val productExceptionHandler = CoroutineExceptionHandler { _, exception ->
         _productState.value = ProductState(
@@ -68,26 +60,7 @@ class ProductViewModel @Inject constructor(
     }
 
     fun getProductById(id: Int) {
-        viewModelScope.launch(Dispatchers.IO + productDetailExceptionHandler) {
-            _productDetailState.value = ProductDetailState(isLoading = true)
 
-            getProductByIdUseCase(id).collect { result ->
-                _productDetailState.value = result.fold(
-                    onSuccess = { product ->
-                        ProductDetailState(
-                            product = product,
-                            isLoading = false
-                        )
-                    },
-                    onFailure = { error ->
-                        ProductDetailState(
-                            errorMessage = error.message,
-                            isLoading = false
-                        )
-                    }
-                )
-            }
-        }
     }
 
 }
