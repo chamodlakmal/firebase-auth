@@ -3,6 +3,8 @@ package lk.chamiviews.firebaseauth.presentation.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -23,13 +25,27 @@ class ProductViewModel @Inject constructor(
     private val _productDetailState = MutableStateFlow(ProductDetailState())
     val productDetailState: StateFlow<ProductDetailState> = _productDetailState
 
+    private val productDetailExceptionHandler = CoroutineExceptionHandler { _, exception ->
+        _productDetailState.value = ProductDetailState(
+            errorMessage = exception.localizedMessage ?: "An unknown error occurred",
+            isLoading = false
+        )
+    }
+
+    private val productExceptionHandler = CoroutineExceptionHandler { _, exception ->
+        _productState.value = ProductState(
+            errorMessage = exception.localizedMessage ?: "An unknown error occurred",
+            isLoading = false
+        )
+    }
+
     init {
         fetchProducts()
     }
 
 
     private fun fetchProducts() {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO + productExceptionHandler) {
             _productState.value = ProductState(isLoading = true)
 
             getProductsUseCase().collect { result ->
@@ -52,7 +68,7 @@ class ProductViewModel @Inject constructor(
     }
 
     fun getProductById(id: Int) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO + productDetailExceptionHandler) {
             _productDetailState.value = ProductDetailState(isLoading = true)
 
             getProductByIdUseCase(id).collect { result ->
