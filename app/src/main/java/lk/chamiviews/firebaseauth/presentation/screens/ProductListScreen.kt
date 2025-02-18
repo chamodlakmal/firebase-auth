@@ -10,10 +10,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults.topAppBarColors
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -22,24 +19,19 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import lk.chamiviews.firebaseauth.domain.model.ProductDomain
 import lk.chamiviews.firebaseauth.domain.model.RatingDomain
+import lk.chamiviews.firebaseauth.presentation.components.CommonCircularProgressIndicator
+import lk.chamiviews.firebaseauth.presentation.components.CommonTopAppBar
 import lk.chamiviews.firebaseauth.presentation.components.ProductItemComponent
 import lk.chamiviews.firebaseauth.presentation.state.ProductState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProductListScreen(
-    productState: ProductState
+    productState: ProductState,
+    navigateToProductDetail: (Int) -> Unit = {}
 ) {
     Scaffold(topBar = {
-        Surface(shadowElevation = 4.dp) {
-            TopAppBar(colors = topAppBarColors(
-                containerColor = Color(0xFFFFFFFF), titleContentColor = Color(0xFF424242)
-            ), modifier = Modifier.background(Color.White), title = {
-                Text(
-                    text = "Products"
-                )
-            })
-        }
+        CommonTopAppBar(title = "Products")
     }) {
         Column(
             modifier = Modifier
@@ -52,12 +44,7 @@ fun ProductListScreen(
         ) {
             when {
                 productState.isLoading -> {
-                    CircularProgressIndicator(
-                        color = Color.DarkGray,
-                        modifier = Modifier
-                            .align(alignment = Alignment.CenterHorizontally)
-                            .padding(16.dp)
-                    )
+                    CommonCircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
                 }
 
                 productState.errorMessage != null -> {
@@ -73,7 +60,10 @@ fun ProductListScreen(
                     // Display products in a LazyColumn when data is available
                     LazyColumn {
                         items(productState.products) { product ->
-                            ProductItemComponent(product)
+                            ProductItemComponent(
+                                product,
+                                navigateToProductDetail = navigateToProductDetail
+                            )
                         }
                     }
                 }

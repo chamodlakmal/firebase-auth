@@ -7,6 +7,7 @@ import dagger.hilt.components.SingletonComponent
 import lk.chamiviews.firebaseauth.data.ProductService
 import lk.chamiviews.firebaseauth.data.repository.ProductRepositoryImpl
 import lk.chamiviews.firebaseauth.domain.repository.ProductRepository
+import lk.chamiviews.firebaseauth.domain.usecase.GetProductByIdUseCase
 import lk.chamiviews.firebaseauth.domain.usecase.GetProductsUseCase
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -35,5 +36,10 @@ object AppModule {
     @Provides
     @Singleton
     fun provideGetProductsUseCase(repository: ProductRepository) = GetProductsUseCase(repository)
+
+    @Provides
+    @Singleton
+    fun provideGetProductByIdUseCase(repository: ProductRepository) =
+        GetProductByIdUseCase(repository)
 
 }
