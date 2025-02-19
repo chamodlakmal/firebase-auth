@@ -20,6 +20,11 @@ class AuthRepositoryImpl(private val firebaseAuth: FirebaseAuth) : AuthRepositor
     }
 
     override fun register(email: String, password: String): Flow<Result<UserDomain>> = flow {
-
+        try {
+            val result = firebaseAuth.createUserWithEmailAndPassword(email, password).await()
+            emit(Result.success(User(result.user?.uid ?: "", result.user?.email).toDomain()))
+        } catch (e: Exception) {
+            emit(Result.failure(e))
+        }
     }
 }
