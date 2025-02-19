@@ -15,5 +15,15 @@ class ProductRepositoryImpl(private val apiService: ProductService) : ProductRep
         } catch (e: Exception) {
             emit(Result.failure(e))
         }
+
+    }
+
+    override fun getProductById(id: Int): Flow<Result<ProductDomain>> = flow {
+        try {
+            val products = apiService.getProductById(id).toDomain()
+            emit(Result.success(products))
+        } catch (e: Exception) {
+            emit(Result.failure(e))
+        }
     }
 }

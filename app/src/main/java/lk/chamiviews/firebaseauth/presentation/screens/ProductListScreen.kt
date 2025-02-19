@@ -84,7 +84,7 @@ fun ProductListScreen(
 @Composable
 fun ProductListScreenPreview() {
     val sampleProductState = ProductState(
-        isLoading = true,
+        isLoading = false,
         products = listOf(
             ProductDomain(
                 id = 1,
@@ -96,7 +96,7 @@ fun ProductListScreenPreview() {
                 rating = RatingDomain(rate = 3.9, count = 120)
             )
         ),
-        errorMessage = null
+        errorMessage = "jbj"
     )
     ProductListScreen(productState = sampleProductState)
 }
